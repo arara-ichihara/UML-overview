@@ -1,0 +1,37 @@
+@startuml
+title:メニュー公開→食事
+actor user 
+boundary yoppy
+boundary araracoin
+
+activate user
+activate yoppy
+user -> yoppy : googleログインリクエスト
+yoppy --> user : googleログイン認証
+user -> yoppy : yoppy表示リクエスト
+yoppy --> user : yoppy表示レスポンス
+user ->> yoppy : 予約リクエスト
+yoppy -->> user : 予約承認レスポンス
+yoppy ->> yoppy : 抽選
+' stop user
+' stop yoppy
+' resume yoppy
+' resume user
+user -> yoppy : QR読み込み
+user -> yoppy : 支払いリクエスト(支払い金額 + userId + 使用日時)
+activate araracoin
+ yoppy -> araracoin : 支払いリクエスト(支払い金額 + userId + 送り先情報 + 使用日時)
+alt 残高が足りない場合
+    araracoin -> user : 拒否
+    user -> araracoin : チャージリクエスト
+    araracoin --> user : 残高更新
+    user -> yoppy : 支払いリクエスト(支払い金額 + userId + 使用日時)
+    yoppy -> araracoin : 支払いリクエスト(支払い金額 + userId + 送り先情報 + 使用日時)
+end
+araracoin --> yoppy : 支払い完了
+deactivate yoppy
+user -> user : 食事
+
+deactivate user
+deactivate araracoin
+@enduml
